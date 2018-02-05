@@ -134,22 +134,28 @@ namespace TicketDesk.Web.Client.Controllers
                 return View(model);
             }
 
-            var result = await SignInManager.PasswordSignInAsync(model.UserNameOrEmail, model.Password, model.RememberMe, true);
-            if (result != SignInStatus.Success && model.UserNameOrEmail.Contains("@"))
+            var domainOnly = DomainContext.TicketDeskSettings.SecuritySettings.DomainLogonOnly;
+            var createAccount = DomainContext.TicketDeskSettings.SecuritySettings.AutoCreateAccount;
+            var result = SignInStatus.Failure;
+            if (!domainOnly)
             {
-                var user = await UserManager.FindByEmailAsync(model.UserNameOrEmail);
-                if (user!=null)
+                result = await SignInManager.PasswordSignInAsync(model.UserNameOrEmail, model.Password, model.RememberMe, true);
+                if (result != SignInStatus.Success && model.UserNameOrEmail.Contains("@"))
                 {
-                    result = await SignInManager.PasswordSignInAsync(user.UserName, model.Password, model.RememberMe, true);
+                    var user = await UserManager.FindByEmailAsync(model.UserNameOrEmail);
+                    if (user != null)
+                    {
+                        result = await SignInManager.PasswordSignInAsync(user.UserName, model.Password, model.RememberMe, true);
+                    }
                 }
-            }
 
-            switch (result)
-            {
-                case SignInStatus.Success:
-                    return RedirectToLocal(returnUrl);
-                case SignInStatus.LockedOut:
-                    return View("Lockout");
+                switch (result)
+                {
+                    case SignInStatus.Success:
+                        return RedirectToLocal(returnUrl);
+                    case SignInStatus.LockedOut:
+                        return View("Lockout");
+                }
             }
 
             var domain = (DomainContext.TicketDeskSettings.SecuritySettings.DefaultLogonDomain ?? string.Empty).Trim();
@@ -161,27 +167,63 @@ namespace TicketDesk.Web.Client.Controllers
                     user = await UserManager.FindByNameAsync(model.UserNameOrEmail + "@" + domain);
                 }
 
-                if (user != null)
+                if (createAccount || user != null)
                 {
                     var dsEntry = new DirectoryEntry("LDAP://" + domain)
                     {
-                        Username = user.UserName,
+                        Username = user == null ? model.UserNameOrEmail : user.UserName,
                         Password = model.Password
                     };
                     var dsSearch = new DirectorySearcher(dsEntry);
-                    dsSearch.Filter = "(objectclass=user)";
+                    dsSearch.Filter = string.Format("(&(objectclass=user)(samaccountName={0}))", dsEntry.Username);
                     var OK = false;
+                    SearchResult dsResult = null;
                     try
                     {
-                        OK = dsSearch.FindOne() != null;
+                        dsResult = dsSearch.FindOne();
+                        OK = dsResult != null;
                     }
                     catch { }
 
                     if (OK)
                     {
-                        await UserManager.ResetAccessFailedCountAsync(user.Id);
-                        await SignInManager.SignInAsync(user, model.RememberMe, true);
-                        return RedirectToLocal(returnUrl);
+                        if (createAccount && user == null)
+                        {
+                            model.Password = System.Web.Security.Membership.GeneratePassword(10, 5);
+                            user = new TicketDeskUser()
+                            {
+                                UserName = model.UserNameOrEmail,
+                                Email = string.Empty,
+                                DisplayName = string.Empty
+                            };
+                            if (dsResult.Properties["mail"].Count > 0)
+                            {
+                                user.Email = dsResult.Properties["mail"][0].ToString();
+                            }
+
+                            if (dsResult.Properties["displayname"].Count > 0)
+                            {
+                                user.DisplayName = dsResult.Properties["displayname"][0].ToString();
+                            }
+
+                            var createResult = await UserManager.CreateAsync(user, model.Password);
+                            if (createResult.Succeeded)
+                            {
+                                await UserManager.AddToRolesAsync(user.Id, DomainContext.TicketDeskSettings.SecuritySettings.DefaultNewUserRoles.ToArray());
+                                user = await UserManager.FindByNameAsync(model.UserNameOrEmail);
+                            }
+                            else
+                            {
+                                user = null;
+                            }
+                        }
+
+                        if (user != null)
+                        {
+                            await UserManager.ResetAccessFailedCountAsync(user.Id);
+                            await SignInManager.SignInAsync(user, model.RememberMe, true);
+                            return RedirectToLocal(returnUrl);
+                        }
                     }
                 }
             }

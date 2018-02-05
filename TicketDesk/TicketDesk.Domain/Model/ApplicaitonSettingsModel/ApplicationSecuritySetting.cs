@@ -29,6 +29,8 @@ namespace TicketDesk.Domain.Model
                 var jData = JsonConvert.DeserializeObject<ApplicationSecuritySetting>(value, jsettings);
                 DefaultNewUserRoles = jData.DefaultNewUserRoles;
                 DefaultLogonDomain = jData.DefaultLogonDomain;
+                AutoCreateAccount = jData.AutoCreateAccount;
+                DomainLogonOnly = jData.DomainLogonOnly;
             }
         }
 
@@ -43,10 +45,12 @@ namespace TicketDesk.Domain.Model
             get { return defaultNewUserRoles;}
             set
             {
-                if (!value.Contains("TdPendingUsers"))
+                if (value == null)
                 {
+                    value = new List<string>();
                     value.Add("TdPendingUsers");
                 }
+
                 defaultNewUserRoles = value;
             }
         }
@@ -54,5 +58,13 @@ namespace TicketDesk.Domain.Model
         [NotMapped]
         [Display(Name = "DefaultLogonDomain", ResourceType = typeof(Strings)) ]
         public string DefaultLogonDomain { get; set; }
+
+        [NotMapped]
+        [Display(Name = "AutoCreateAccount", ResourceType = typeof(Strings))]
+        public bool AutoCreateAccount { get; set; }
+
+        [NotMapped]
+        [Display(Name = "DomainLogonOnly", ResourceType = typeof(Strings))]
+        public bool DomainLogonOnly { get; set; }
     }
 }

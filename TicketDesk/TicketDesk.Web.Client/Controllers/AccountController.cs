@@ -6,12 +6,13 @@ using System.Web;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
 using Microsoft.Owin.Security;
+using TicketDesk.Domain;
+using TicketDesk.Localization.Controllers;
 using TicketDesk.PushNotifications;
 using TicketDesk.PushNotifications.Model;
 using TicketDesk.Web.Client.Models;
 using TicketDesk.Web.Identity;
 using TicketDesk.Web.Identity.Model;
-using TicketDesk.Localization.Controllers;
 
 namespace TicketDesk.Web.Client.Controllers
 {
@@ -23,23 +24,36 @@ namespace TicketDesk.Web.Client.Controllers
         private TicketDeskUserManager UserManager { get; set; }
         private TicketDeskSignInManager SignInManager { get; set; }
         private TdPushNotificationContext NotificationContext { get; set; }
-        public AccountController(TicketDeskUserManager userManager, TicketDeskSignInManager signInManager, TdPushNotificationContext notificationContext)
+        private TdDomainContext DomainContext { get; set; }
+        public AccountController(TicketDeskUserManager userManager, 
+            TicketDeskSignInManager signInManager, 
+            TdPushNotificationContext notificationContext,
+            TdDomainContext domainContext)
         {
             UserManager = userManager;
             SignInManager = signInManager;
             NotificationContext = notificationContext;
+            DomainContext = domainContext;
         }
 
 
         [Route("manage")]
         public ActionResult Manage(AccountMessageId? message)
         {
-            ViewBag.StatusMessage =
-               message == AccountMessageId.ChangePasswordSuccess ? Strings.ChangePasswordSuccess
-               : message == AccountMessageId.Error ? Strings.Error
-               : message == AccountMessageId.ProfileSaveSuccess ? Strings.ProfileSaveSuccess
-               : "";
-            return View();
+            var domainOnly = DomainContext.TicketDeskSettings.SecuritySettings.DomainLogonOnly;
+            if (domainOnly)
+            {
+                return RedirectToActionPermanent("EditProfile");
+            }
+            else
+            {
+                ViewBag.StatusMessage =
+                   message == AccountMessageId.ChangePasswordSuccess ? Strings.ChangePasswordSuccess
+                   : message == AccountMessageId.Error ? Strings.Error
+                   : message == AccountMessageId.ProfileSaveSuccess ? Strings.ProfileSaveSuccess
+                   : "";
+                return View();
+            }
         }
 
         [Route("change-password")]

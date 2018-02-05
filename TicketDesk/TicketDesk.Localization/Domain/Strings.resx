@@ -449,4 +449,10 @@
   <data name="DefaultLogonDomain" xml:space="preserve">
     <value>Default Logon Domain</value>
   </data>
+  <data name="AutoCreateAccount" xml:space="preserve">
+    <value>Create account automatically for first time successfully domain log on?</value>
+  </data>
+  <data name="DomainLogonOnly" xml:space="preserve">
+    <value>Domain log on only?</value>
+  </data>
 </root>

@@ -449,4 +449,10 @@
   <data name="DefaultLogonDomain" xml:space="preserve">
     <value>Domínio de logon padrão</value>
   </data>
+  <data name="AutoCreateAccount" xml:space="preserve">
+    <value>Criar uma conta automaticamente para início de sessão com sucesso no domínio do domínio?</value>
+  </data>
+  <data name="DomainLogonOnly" xml:space="preserve">
+    <value>Registro de domínio apenas?</value>
+  </data>
 </root>

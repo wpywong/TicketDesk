@@ -97,6 +97,15 @@ namespace TicketDesk.Localization.Domain {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Create account automatically for first time successfully domain log on?.
+        /// </summary>
+        public static string AutoCreateAccount {
+            get {
+                return ResourceManager.GetString("AutoCreateAccount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {0}: from &quot;{1}&quot; to &quot;{2}&quot;.
         /// </summary>
         public static string Changes_From_To {
@@ -183,6 +192,15 @@ namespace TicketDesk.Localization.Domain {
         public static string DefaultNewUserRoles {
             get {
                 return ResourceManager.GetString("DefaultNewUserRoles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Domain log on only?.
+        /// </summary>
+        public static string DomainLogonOnly {
+            get {
+                return ResourceManager.GetString("DomainLogonOnly", resourceCulture);
             }
         }
         

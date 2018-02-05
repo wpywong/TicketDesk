@@ -34,7 +34,6 @@ namespace TicketDesk.Web.Client.Models
         [Display(Name = "DisplayName", ResourceType = typeof(Strings))]
         public string DisplayName { get; set; }
 
-        [Required(ErrorMessageResourceName = "FieldRequired", ErrorMessageResourceType = typeof(Validation))]
         [StringLength(100, ErrorMessageResourceName = "FieldMinimumLength", ErrorMessageResourceType = typeof(Validation), MinimumLength = 6)]
         [DataType(DataType.Password)]
         [Display(Name = "Password", ResourceType = typeof(Strings))]

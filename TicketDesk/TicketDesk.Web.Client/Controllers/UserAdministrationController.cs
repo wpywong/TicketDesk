@@ -96,8 +96,9 @@ namespace TicketDesk.Web.Client.Controllers
             }
             var model = new UserAccountInfoViewModel(user, user.Roles.Select(r => r.RoleId));
             var tdPendingRole = RoleManager.Roles.FirstOrDefault(r => r.Name == "TdPendingUsers");
-            
-            ViewBag.TdPendingUsersRoleId = tdPendingRole == null ? "" : tdPendingRole.Id; 
+            var domainOnly = DomainContext.TicketDeskSettings.SecuritySettings.DomainLogonOnly;
+            ViewBag.TdPendingUsersRoleId = tdPendingRole == null ? "" : tdPendingRole.Id;
+            ViewBag.SetPassword = !domainOnly;
             return View(model);
         }
 
@@ -190,6 +191,8 @@ namespace TicketDesk.Web.Client.Controllers
         [Route("new")]
         public ActionResult New()
         {
+            var domainOnly = DomainContext.TicketDeskSettings.SecuritySettings.DomainLogonOnly;
+            ViewBag.SetPassword = !domainOnly;
             return View();
         }
 
@@ -198,8 +201,21 @@ namespace TicketDesk.Web.Client.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> New(UserRegisterViewModel model)
         {
+            var domainOnly = DomainContext.TicketDeskSettings.SecuritySettings.DomainLogonOnly;
+            if (!domainOnly && string.IsNullOrEmpty(model.Password))
+            {
+                var resources = new System.Resources.ResourceManager(typeof(TicketDesk.Localization.Validation));
+                var msg = string.Format(resources.GetString("FieldRequired"), "Password");
+                ModelState.AddModelError("Password", msg);
+            }
+
             if (ModelState.IsValid)
             {
+                if (domainOnly)
+                {
+                    model.Password = System.Web.Security.Membership.GeneratePassword(10, 5);
+                }
+
                 var user = new TicketDeskUser { UserName = model.UserName, Email = model.Email, DisplayName = model.DisplayName };
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
