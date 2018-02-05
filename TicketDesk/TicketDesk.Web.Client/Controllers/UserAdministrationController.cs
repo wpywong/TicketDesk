@@ -105,6 +105,16 @@ namespace TicketDesk.Web.Client.Controllers
         [HttpPost]
         public async Task<ActionResult> Edit(UserAccountInfoViewModel model)
         {
+            if (!string.IsNullOrEmpty(model.NewPassword) || !string.IsNullOrEmpty(model.ConfirmPassword))
+            {
+                if (model.NewPassword.Length<6)
+                {
+                    var resources = new System.Resources.ResourceManager(typeof(TicketDesk.Localization.Validation));
+                    var msg = string.Format(resources.GetString("FieldMinimumLength"), "Password", 0, 6);
+                    ModelState.AddModelError("NewPassword", msg);
+                }
+            }
+
             var tdPendingRole = RoleManager.Roles.FirstOrDefault(r => r.Name == "TdPendingUsers");
             ViewBag.TdPendingUsersRoleId = tdPendingRole == null ? "" : tdPendingRole.Id;
             if (!ModelState.IsValid)
@@ -113,6 +123,12 @@ namespace TicketDesk.Web.Client.Controllers
             }
 
             var user = await UserManager.FindByIdAsync(model.User.Id);
+            if (!string.IsNullOrEmpty(model.NewPassword))
+            {
+                await UserManager.RemovePasswordAsync(user.Id);
+                await UserManager.AddPasswordAsync(user.Id, model.NewPassword);
+            }
+
             var demoMode = (ConfigurationManager.AppSettings["ticketdesk:DemoModeEnabled"] ?? "false").Equals("true", StringComparison.InvariantCultureIgnoreCase);
             if (demoMode && model.User.Email.EndsWith("@example.com", StringComparison.InvariantCultureIgnoreCase))
             {

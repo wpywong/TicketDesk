@@ -88,6 +88,15 @@ namespace TicketDesk.Web.Client.Models
 
         public IEnumerable<string> Roles { get; set; }
 
+        [DataType(DataType.Password)]
+        [Display(Name = "NewPassword", ResourceType = typeof(Strings))]
+        public string NewPassword { get; set; }
+
+        [DataType(DataType.Password)]
+        [Display(Name = "ConfirmNewPassword", ResourceType = typeof(Strings))]
+        [System.ComponentModel.DataAnnotations.Compare("NewPassword", ErrorMessageResourceName = "NewConfirmationDoNotMatch", ErrorMessageResourceType = typeof(Strings))]
+        public string ConfirmPassword { get; set; }
+
         public IEnumerable<string> GetRoleNames(IEnumerable<TicketDeskRole> allRolesList)
         {
             return allRolesList.Where(ar => Roles.Any(r => r == ar.Id)).Select(ar => ar.DisplayName);
