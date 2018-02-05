@@ -229,7 +229,7 @@ namespace TicketDesk.Domain
             };
         }
 
-        public Action<Ticket> ForceClose(string comment)
+        public Action<Ticket> ForceClose(string comment, string resolutionDateAsString, decimal? actualDuration)
         {
             const TicketActivity activity = TicketActivity.ForceClose;
             return ticket =>
@@ -237,12 +237,14 @@ namespace TicketDesk.Domain
                 if (CheckSecurity(ticket, activity))
                 {
                     ticket.TicketStatus = TicketStatus.Closed;
+                    ticket.ResolutionDateAsString = resolutionDateAsString;
+                    ticket.ActualDuration = actualDuration;
                     ticket.TicketEvents.AddActivityEvent(SecurityProvider.CurrentUserId, activity, comment);
                 }
             };
         }
 
-        public Action<Ticket> GiveUp(string comment)
+        public Action<Ticket> GiveUp(string comment, decimal? actualDuration)
         {
             const TicketActivity activity = TicketActivity.GiveUp;
             return ticket =>
@@ -250,6 +252,8 @@ namespace TicketDesk.Domain
                 if (CheckSecurity(ticket, activity))
                 {
                     ticket.AssignedTo = null;
+                    ticket.ResolutionDate = null;
+                    ticket.ActualDuration = actualDuration;
                     ticket.TicketEvents.AddActivityEvent(SecurityProvider.CurrentUserId, activity, comment);
 
                 }
@@ -300,6 +304,7 @@ namespace TicketDesk.Domain
             {
                 if (CheckSecurity(ticket, activity))
                 {
+                    ticket.ResolutionDate = null;
                     ticket.AssignedTo = assignToMe ? SecurityProvider.CurrentUserId : null;
                     ticket.TicketStatus = TicketStatus.Active;
                     ticket.TicketEvents.AddActivityEvent(SecurityProvider.CurrentUserId, activity, comment);
@@ -307,7 +312,7 @@ namespace TicketDesk.Domain
             };
         }
 
-        public Action<Ticket> Resolve(string comment)
+        public Action<Ticket> Resolve(string comment, string resolutionDateAsString, decimal? actualDuration)
         {
             const TicketActivity activity = TicketActivity.Resolve;
             return ticket =>
@@ -315,6 +320,8 @@ namespace TicketDesk.Domain
                 if (CheckSecurity(ticket, activity))
                 {
                     ticket.TicketStatus = TicketStatus.Resolved;
+                    ticket.ResolutionDateAsString = resolutionDateAsString;
+                    ticket.ActualDuration = actualDuration;
                     ticket.TicketEvents.AddActivityEvent(SecurityProvider.CurrentUserId, activity, comment);
                 }
             };
@@ -355,6 +362,8 @@ namespace TicketDesk.Domain
                             ticket.Priority = priority;
                         }
                     }
+
+                    ticket.ResolutionDate = null;
                     ticket.TicketEvents.AddActivityEvent(SecurityProvider.CurrentUserId, activity, comment, priority, null);
                 }
 
@@ -386,6 +395,7 @@ namespace TicketDesk.Domain
                             }
                         }
 
+                        ticket.ResolutionDate = null;
                         ticket.TicketEvents.AddActivityEvent(SecurityProvider.CurrentUserId, activity, comment, priority, SecurityProvider.GetUserDisplayName(assignTo));
                     }
                 }

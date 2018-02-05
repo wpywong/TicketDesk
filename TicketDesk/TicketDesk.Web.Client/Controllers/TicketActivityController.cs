@@ -136,18 +136,18 @@ namespace TicketDesk.Web.Client.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Route("force-close")]
-        public async Task<ActionResult> ForceClose(int ticketId, [ModelBinder(typeof(SummernoteModelBinder))] string comment)
+        public async Task<ActionResult> ForceClose(int ticketId, [ModelBinder(typeof(SummernoteModelBinder))] string comment, string resolutionDateAsString, decimal? actualDuration)
         {
-            var activityFn = Context.TicketActions.ForceClose(comment);
+            var activityFn = Context.TicketActions.ForceClose(comment, resolutionDateAsString, actualDuration);
             return await PerformTicketAction(ticketId, activityFn, TicketActivity.ForceClose);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Route("give-up")]
-        public async Task<ActionResult> GiveUp(int ticketId, [ModelBinder(typeof(SummernoteModelBinder))] string comment)
+        public async Task<ActionResult> GiveUp(int ticketId, [ModelBinder(typeof(SummernoteModelBinder))] string comment, decimal? actualDuration)
         {
-            var activityFn = Context.TicketActions.GiveUp(comment);
+            var activityFn = Context.TicketActions.GiveUp(comment, actualDuration);
             return await PerformTicketAction(ticketId, activityFn, TicketActivity.GiveUp);
         }
 
@@ -246,9 +246,9 @@ namespace TicketDesk.Web.Client.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Route("resolve")]
-        public async Task<ActionResult> Resolve(int ticketId, [ModelBinder(typeof(SummernoteModelBinder))] string comment)
+        public async Task<ActionResult> Resolve(int ticketId, [ModelBinder(typeof(SummernoteModelBinder))] string comment, string resolutionDateAsString, decimal? actualDuration)
         {
-            var activityFn = Context.TicketActions.Resolve(comment);
+            var activityFn = Context.TicketActions.Resolve(comment, resolutionDateAsString, actualDuration);
             return await PerformTicketAction(ticketId, activityFn, TicketActivity.ReOpen);
         }
 

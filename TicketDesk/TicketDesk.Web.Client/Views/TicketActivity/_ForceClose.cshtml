@@ -15,6 +15,15 @@
 
 @using TicketDesk.Domain.Model
 @model  Ticket
-@*
-    //no additional form content
-*@
+<div class="form-group form-group-sm">
+    @Html.LabelFor(model => model.ResolutionDate, new { @class = "col-sm-2 control-label" })
+    <div class="col-sm-3">
+        @Html.TextBoxFor(model => model.ResolutionDateAsString, new { @class = "form-control input-sm" })
+        @Html.ValidationMessageFor(model => model.ActualDuration, "", new { @class = "text-danger", style = "float:left" })
+    </div>
+    @Html.LabelFor(model => model.ActualDuration, new { @class = "col-sm-2 control-label" })
+    <div class="col-sm-3">
+        @Html.TextBoxFor(model => model.ActualDuration, new { @class = "form-control input-sm", style = "padding-right:0" })
+        @Html.ValidationMessageFor(model => model.ActualDuration, "", new { @class = "text-danger", style = "float:right" })
+    </div>
+</div>
