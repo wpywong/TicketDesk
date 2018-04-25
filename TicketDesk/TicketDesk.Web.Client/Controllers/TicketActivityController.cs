@@ -52,6 +52,13 @@ namespace TicketDesk.Web.Client.Controllers
             {
                 await SetProjectInfoForModelAsync(ticket);
             }
+            else if (!ticket.ResolutionDate.HasValue)
+            {
+                if (activity == TicketActivity.Resolve || activity == TicketActivity.ForceClose)
+                {
+                    ticket.ResolutionDate = DateTime.Now.Date;
+                }
+            }
             return PartialView("_ActivityForm", ticket);
         }
 
@@ -121,6 +128,7 @@ namespace TicketDesk.Web.Client.Controllers
             string ticketType,
             string category,
             string owner,
+            string requestedBy,
             string tagList,
             decimal? estimatedDuration,
             decimal? actualDuration,
@@ -128,8 +136,8 @@ namespace TicketDesk.Web.Client.Controllers
             string resolutionDateAsString)
         {
             details = details.StripHtmlWhenEmpty();
-            var projectName = await Context.Projects.Where(p => p.ProjectId == projectId).Select(s=>s.ProjectName).FirstOrDefaultAsync();
-            var activityFn = Context.TicketActions.EditTicketInfo(comment, projectId, projectName, title, details, priority, dueDateAsString, ticketType, category, owner, tagList, estimatedDuration, actualDuration, targetDateAsString, resolutionDateAsString, Context.TicketDeskSettings);
+            var projectName = await Context.Projects.Where(p => p.ProjectId == projectId).Select(s => s.ProjectName).FirstOrDefaultAsync();
+            var activityFn = Context.TicketActions.EditTicketInfo(comment, projectId, projectName, title, details, priority, dueDateAsString, ticketType, category, owner, requestedBy, tagList, estimatedDuration, actualDuration, targetDateAsString, resolutionDateAsString, Context.TicketDeskSettings);
             return await PerformTicketAction(ticketId, activityFn, TicketActivity.EditTicketInfo);
         }
 

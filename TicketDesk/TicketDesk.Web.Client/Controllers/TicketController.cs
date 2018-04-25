@@ -65,6 +65,7 @@ namespace TicketDesk.Web.Client.Controllers
             var model = new Ticket
             {
                 Owner = Context.SecurityProvider.CurrentUserId,
+                RequestedBy = Context.SecurityProvider.CurrentUserId,
                 IsHtml = Context.TicketDeskSettings.ClientSettings.GetDefaultTextEditorType() == "summernote"
             };
 

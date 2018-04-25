@@ -121,6 +121,7 @@ namespace TicketDesk.Domain
             string ticketType,
             string category,
             string owner,
+            string requestedBy,
             string tagList,
             decimal? estimatedDuration,
             decimal? actualDuraion,
@@ -221,6 +222,11 @@ namespace TicketDesk.Domain
                     {
                         sb.AppendLine(string.Format("<dd>    " + Strings.Changes_From_To + "</dd>", PropertyUtility.GetPropertyDisplayString<Ticket>(p => p.Owner), SecurityProvider.GetUserDisplayName(ticket.Owner), SecurityProvider.GetUserDisplayName(owner)));
                         ticket.Owner = owner;
+                    }
+                    if (ticket.RequestedBy != requestedBy)
+                    {
+                        sb.AppendLine(string.Format("<dd>    " + Strings.Changes_From_To + "</dd>", PropertyUtility.GetPropertyDisplayString<Ticket>(p => p.RequestedBy), SecurityProvider.GetUserDisplayName(ticket.RequestedBy), SecurityProvider.GetUserDisplayName(requestedBy)));
+                        ticket.RequestedBy = requestedBy;
                     }
                     sb.AppendLine("</dl>");
                     comment = sb.ToString();

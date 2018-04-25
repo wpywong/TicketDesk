@@ -62,6 +62,11 @@ namespace TicketDesk.Domain.Model
             return GetUserInfo(ticket.Owner);
         }
 
+        public static UserDisplayInfo GetRequesterInfo(this Ticket ticket)
+        {
+            return GetUserInfo(ticket.RequestedBy);
+        }
+
         public static UserDisplayInfo GetLastUpdatedByInfo(this Ticket ticket)
         {
             return GetUserInfo(ticket.LastUpdateBy);
@@ -128,6 +133,24 @@ namespace TicketDesk.Domain.Model
             return all.ToUserSelectList(false, ticket.Owner);
         }
 
+        public static SelectList GetRequestersList(this Ticket ticket, bool excludeCurrentUser = false, bool excludeCurrentOwner = false)
+        {
+            var roleManager = DependencyResolver.Current.GetService<TicketDeskRoleManager>();
+            var userManager = DependencyResolver.Current.GetService<TicketDeskUserManager>();
+            var sec = DependencyResolver.Current.GetService<TicketDeskContextSecurityProvider>();
+            var all = roleManager.GetTdPendingUsers(userManager).
+                Union(roleManager.GetTdInternalUsers(userManager)).
+                OrderBy(x => x.DisplayName).AsQueryable();
+            if (excludeCurrentUser)
+            {
+                all = all.Where(u => u.Id != sec.CurrentUserId);
+            }
+            if (excludeCurrentOwner)
+            {
+                all = all.Where(u => u.Id != ticket.Owner);
+            }
+            return all.ToUserSelectList(false, ticket.Owner);
+        }
 
         public static SelectList GetAssignedToList(this Ticket ticket, bool excludeCurrentUser = false, bool excludeCurrentAssignedTo = false, bool includeEmptyText = true)
         {

@@ -445,4 +445,10 @@
   <data name="DefaultLogonDomain" xml:space="preserve">
     <value>Standard Anmeldedomäne</value>
   </data>
+  <data name="TicketRequestedBy" xml:space="preserve">
+    <value>Angefordert von</value>
+  </data>
+  <data name="TicketRequestedByShort" xml:space="preserve">
+    <value>Angefordert von</value>
+  </data>
 </root>

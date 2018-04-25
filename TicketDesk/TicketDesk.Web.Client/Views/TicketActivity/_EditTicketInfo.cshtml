@@ -151,13 +151,18 @@ else
         </div>
     }
 </div>
-@if (Model.AllowSetOwner())
-{
-    <div class="form-group">
+<div class="form-group">
+    @if (Model.AllowSetOwner())
+    {
         @Html.LabelFor(model => model.Owner, new { @class = "col-sm-2 control-label" })
         <div class="col-sm-3">
             @Html.DropDownListFor(model => model.Owner, Model.GetOwnersList(), new { @class = "form-control input-sm", tabindex = 13 })
             @Html.ValidationMessageFor(model => model.Owner, "", new { @class = "text-danger" })
         </div>
+    }
+    @Html.LabelFor(model => model.RequestedBy, new { @class = "col-sm-2 control-label" })
+    <div class="col-sm-3">
+        @Html.DropDownListFor(model => model.RequestedBy, Model.GetRequestersList(), new { @class = "form-control input-sm", tabindex = 14 })
+        @Html.ValidationMessageFor(model => model.RequestedBy, "", new { @class = "text-danger" })
     </div>
-}
+</div>

@@ -71,13 +71,17 @@
 
                     </div>
                     <div>
-                        <div>@(string.IsNullOrEmpty(Model.Priority) ? string.Empty : string.Format(Index.Priority, Model.Priority)) @Model.Category @Model.TicketType</div>
-
+                        <div>
+                            @(string.IsNullOrEmpty(Model.Priority) ? string.Empty : string.Format(Index.Priority, Model.Priority)) @Model.Category @Model.TicketType
+                        </div>
                         <div>
                             @Html.Raw(string.Format(Index.AssignedTo, string.IsNullOrEmpty(Model.AssignedTo) ? "<span class='label label-warning'>" + Index.Unassigned + "</span>" : Model.GetAssignedToInfo().DisplayName))
                         </div>
                         <div>
                             @Html.Raw(string.Format(Index.OwnedBy, Model.GetOwnerInfo().DisplayName))
+                        </div>
+                        <div>
+                            @Html.Raw(string.Format(Index.RequestedBy, Model.GetRequesterInfo().DisplayName))
                         </div>
                         <div class="hidden-sm hidden-md hidden-lg">
                             @Html.Raw(string.Format(Index.UpdatedBy, Model.GetLastUpdatedByInfo().DisplayName, Model.LastUpdateDate.DateTime.ToShortDateString(), Model.LastUpdateDate.DateTime.ToShortTimeString()))

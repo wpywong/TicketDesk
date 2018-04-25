@@ -455,4 +455,10 @@
   <data name="DomainLogonOnly" xml:space="preserve">
     <value>Registro de domínio apenas?</value>
   </data>
+  <data name="TicketRequestedBy" xml:space="preserve">
+    <value>Requerido por</value>
+  </data>
+  <data name="TicketRequestedByShort" xml:space="preserve">
+    <value>Requerido por</value>
+  </data>
 </root>

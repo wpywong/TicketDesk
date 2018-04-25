@@ -135,6 +135,9 @@
   <data name="Priority" xml:space="preserve">
     <value>Prioridade {0}</value>
   </data>
+  <data name="RequestedBy" xml:space="preserve">
+    <value>&lt;b&gt;Requerido por:&lt;/b&gt; {0}</value>
+  </data>
   <data name="Subscribers" xml:space="preserve">
     <value>Inscritos</value>
   </data>

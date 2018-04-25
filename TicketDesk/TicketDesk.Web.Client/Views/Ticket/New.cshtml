@@ -212,7 +212,7 @@
                             @if (Model.AllowSetOwner())
                             {
                                 @Html.LabelFor(model => model.Owner, new { @class = "col-md-2 col-sm-1 control-label" })
-                                <div class="col-md-3 col-sm-5">
+                                <div class="col-md-3 col-sm-4">
                                     @Html.DropDownListFor(model => model.Owner, Model.GetOwnersList(), new { @class = "form-control input-sm", tabindex = 13 })
                                     @Html.ValidationMessageFor(model => model.Owner, "", new { @class = "text-danger" })
                                 </div>
@@ -225,6 +225,13 @@
                                     @Html.ValidationMessageFor(model => model.AssignedTo, "", new { @class = "text-danger" })
                                 </div>
                             }
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.RequestedBy, new { @class = "col-md-2 col-sm-2 control-label" })
+                            <div class="col-md-3 col-sm-4">
+                                @Html.DropDownListFor(model => model.RequestedBy, Model.GetRequestersList(), new { @class = "form-control input-sm", tabindex = 15 })
+                                @Html.ValidationMessageFor(model => model.RequestedBy, "", new { @class = "text-danger" })
+                            </div>
                         </div>
                         <div class="form-group">
                             <label class="col-md-2 col-sm-1 control-label">@New.Files</label>
@@ -255,7 +262,7 @@
                         </div>
                     </div>
                 </div>
-                                    }
+            }
         </div>
     </div>
 </main>
